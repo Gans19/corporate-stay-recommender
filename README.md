@@ -295,6 +295,11 @@ The full UI/design-system reference — tokens, typography, glassmorphism,
 components, motion, states, accessibility and responsiveness — is documented in
 [`docs/UI-STYLE-GUIDE.md`](docs/UI-STYLE-GUIDE.md).
 
+## Demo
+
+- **Live app:** https://corporate-stay-recommender.vercel.app/
+- **Screen recording:** [`docs/demo-screen-recording.mp4`](docs/demo-screen-recording.mp4)
+
 ## Screenshots
 
 > Add screenshots of the running UI here before submitting:
