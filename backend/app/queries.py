@@ -159,6 +159,8 @@ def colleague_recommendations(
            hotel.safetyScore   AS safetyScore,
            hotel.gstRegistered AS gstRegistered,
            city.name AS city,
+           hotel.lat AS lat,
+           hotel.lng AS lng,
            colleagueCount,
            round(avgRating * 100.0) / 100.0 AS colleagueAvgRating,
            colleagues,
@@ -229,6 +231,39 @@ def similar_hotels(hotel_id: int, limit: int = 6) -> list[dict[str, Any]]:
     LIMIT $limit
     """
     return db.run_read(query, hotelId=hotel_id, limit=limit)
+
+
+def map_context(employee_id: int, hotel_id: int) -> dict[str, Any] | None:
+    """Coordinates for rendering a route map: the traveler's company office in
+    the hotel's city (if any), the hotel itself, and the city center — so the
+    UI can plot a real route line instead of the abstract graph diagram.
+    """
+    query = """
+    MATCH (h:Hotel {hotelId: $hotelId})-[:LOCATED_IN]->(city:City)
+    OPTIONAL MATCH (e:Employee {employeeId: $employeeId})-[:WORKS_FOR]->(co:Company)
+    OPTIONAL MATCH (co)-[:HAS_OFFICE]->(o:Office)-[:IN_CITY]->(city)
+    OPTIONAL MATCH (h)-[n:NEAR]->(o)
+    RETURN city.name AS city,
+           city.lat AS cityLat,
+           city.lng AS cityLng,
+           h.hotelId AS hotelId,
+           h.name AS hotelName,
+           h.lat AS hotelLat,
+           h.lng AS hotelLng,
+           collect(DISTINCT CASE WHEN o IS NULL THEN NULL ELSE {
+             officeId: o.officeId,
+             name: o.name,
+             lat: o.lat,
+             lng: o.lng,
+             distanceKm: n.distanceKm
+           } END) AS offices
+    """
+    rows = db.run_read(query, employeeId=employee_id, hotelId=hotel_id)
+    if not rows:
+        return None
+    row = rows[0]
+    row["offices"] = [o for o in row["offices"] if o is not None]
+    return row
 
 
 def connection_path(employee_id: int, hotel_id: int) -> dict[str, Any] | None:

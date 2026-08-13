@@ -1,19 +1,19 @@
 {
   "cities": [
-    { "name": "Bengaluru", "tier": 1, "state": "Karnataka" },
-    { "name": "Mumbai", "tier": 1, "state": "Maharashtra" },
-    { "name": "Pune", "tier": 2, "state": "Maharashtra" },
-    { "name": "Coimbatore", "tier": 2, "state": "Tamil Nadu" },
-    { "name": "Kochi", "tier": 2, "state": "Kerala" },
-    { "name": "Indore", "tier": 2, "state": "Madhya Pradesh" },
-    { "name": "Nagpur", "tier": 2, "state": "Maharashtra" },
-    { "name": "Mysuru", "tier": 2, "state": "Karnataka" },
-    { "name": "Vijayawada", "tier": 2, "state": "Andhra Pradesh" },
-    { "name": "Nashik", "tier": 3, "state": "Maharashtra" },
-    { "name": "Rajkot", "tier": 3, "state": "Gujarat" },
-    { "name": "Hubballi", "tier": 3, "state": "Karnataka" },
-    { "name": "Salem", "tier": 3, "state": "Tamil Nadu" },
-    { "name": "Guntur", "tier": 3, "state": "Andhra Pradesh" }
+    { "name": "Bengaluru", "tier": 1, "state": "Karnataka", "lat": 12.9716, "lng": 77.5946 },
+    { "name": "Mumbai", "tier": 1, "state": "Maharashtra", "lat": 19.0760, "lng": 72.8777 },
+    { "name": "Pune", "tier": 2, "state": "Maharashtra", "lat": 18.5204, "lng": 73.8567 },
+    { "name": "Coimbatore", "tier": 2, "state": "Tamil Nadu", "lat": 11.0168, "lng": 76.9558 },
+    { "name": "Kochi", "tier": 2, "state": "Kerala", "lat": 9.9312, "lng": 76.2673 },
+    { "name": "Indore", "tier": 2, "state": "Madhya Pradesh", "lat": 22.7196, "lng": 75.8577 },
+    { "name": "Nagpur", "tier": 2, "state": "Maharashtra", "lat": 21.1458, "lng": 79.0882 },
+    { "name": "Mysuru", "tier": 2, "state": "Karnataka", "lat": 12.2958, "lng": 76.6394 },
+    { "name": "Vijayawada", "tier": 2, "state": "Andhra Pradesh", "lat": 16.5062, "lng": 80.6480 },
+    { "name": "Nashik", "tier": 3, "state": "Maharashtra", "lat": 19.9975, "lng": 73.7898 },
+    { "name": "Rajkot", "tier": 3, "state": "Gujarat", "lat": 22.3039, "lng": 70.8022 },
+    { "name": "Hubballi", "tier": 3, "state": "Karnataka", "lat": 15.3647, "lng": 75.1240 },
+    { "name": "Salem", "tier": 3, "state": "Tamil Nadu", "lat": 11.6643, "lng": 78.1460 },
+    { "name": "Guntur", "tier": 3, "state": "Andhra Pradesh", "lat": 16.3067, "lng": 80.4365 }
   ],
   "companies": [
     { "companyId": 1, "name": "Sunrise FMCG", "industry": "FMCG", "officeCities": ["Bengaluru", "Coimbatore", "Indore", "Nashik", "Salem"] },

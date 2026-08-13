@@ -5,6 +5,7 @@ import type {
   EmployeeSummary,
   GraphStats,
   HealthStatus,
+  MapContext,
   Recommendation,
   SimilarHotel,
 } from "./types";
@@ -69,4 +70,6 @@ export const api = {
     getJSON<SimilarHotel[]>(`/api/hotels/${hotelId}/similar`),
   connection: (employeeId: number, hotelId: number) =>
     getJSON<ConnectionPath>(`/api/employees/${employeeId}/connection/${hotelId}`),
+  mapContext: (employeeId: number, hotelId: number) =>
+    getJSON<MapContext>(`/api/employees/${employeeId}/map/${hotelId}`),
 };

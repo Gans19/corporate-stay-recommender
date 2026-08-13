@@ -22,6 +22,7 @@ from .models import (
     HealthStatus,
     HotelDetail,
     HotelSummary,
+    MapContext,
     NearOfficeHotel,
     Recommendation,
     SimilarHotel,
@@ -178,3 +179,15 @@ def connection(employee_id: int, hotel_id: int) -> ConnectionPath:
     if path is None:
         raise HTTPException(status_code=404, detail="No connecting path found")
     return ConnectionPath(**path)
+
+
+@app.get(
+    "/api/employees/{employee_id}/map/{hotel_id}",
+    response_model=MapContext,
+    tags=["recommendations"],
+)
+def map_context(employee_id: int, hotel_id: int) -> MapContext:
+    ctx = _db_guard(queries.map_context, employee_id, hotel_id)
+    if ctx is None:
+        raise HTTPException(status_code=404, detail="No map context found")
+    return MapContext(**ctx)

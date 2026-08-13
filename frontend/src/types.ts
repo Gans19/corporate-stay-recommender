@@ -40,6 +40,8 @@ export interface Recommendation {
   safetyScore: number | null;
   gstRegistered: boolean | null;
   city: string;
+  lat: number | null;
+  lng: number | null;
   colleagueCount: number;
   colleagueAvgRating: number | null;
   colleagues: string[];
@@ -66,6 +68,25 @@ export interface ConnectionPath {
   nodes: PathNode[];
   relationships: string[];
   hops: number;
+}
+
+export interface MapOffice {
+  officeId: number | null;
+  name: string | null;
+  lat: number | null;
+  lng: number | null;
+  distanceKm: number | null;
+}
+
+export interface MapContext {
+  city: string;
+  cityLat: number | null;
+  cityLng: number | null;
+  hotelId: number;
+  hotelName: string;
+  hotelLat: number | null;
+  hotelLng: number | null;
+  offices: MapOffice[];
 }
 
 export interface GraphStats {

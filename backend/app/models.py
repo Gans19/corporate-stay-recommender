@@ -75,6 +75,8 @@ class Recommendation(BaseModel):
     safetyScore: float | None = None
     gstRegistered: bool | None = None
     city: str
+    lat: float | None = None
+    lng: float | None = None
     colleagueCount: int
     colleagueAvgRating: float | None = None
     colleagues: list[str] = []
@@ -111,6 +113,25 @@ class ConnectionPath(BaseModel):
     nodes: list[PathNode]
     relationships: list[str]
     hops: int
+
+
+class MapOffice(BaseModel):
+    officeId: int | None = None
+    name: str | None = None
+    lat: float | None = None
+    lng: float | None = None
+    distanceKm: float | None = None
+
+
+class MapContext(BaseModel):
+    city: str
+    cityLat: float | None = None
+    cityLng: float | None = None
+    hotelId: int
+    hotelName: str
+    hotelLat: float | None = None
+    hotelLng: float | None = None
+    offices: list[MapOffice] = []
 
 
 class GraphStats(BaseModel):

@@ -15,6 +15,7 @@ value is ever concatenated into a query string.
 from __future__ import annotations
 
 import json
+import math
 import os
 import random
 import sys
@@ -28,6 +29,31 @@ DATA_FILE = Path(__file__).parent / "data" / "dataset.json"
 ENV_FILE = Path(__file__).parent.parent / "backend" / ".env"
 
 random.seed(7)  # reproducible seed data
+
+
+def jitter_coords(lat: float, lng: float, max_km: float = 6.0) -> tuple[float, float]:
+    """Offset a lat/lng by a random distance (0..max_km) in a random direction.
+
+    Used to place offices and hotels at distinct, realistic-looking points
+    within a city rather than stacking every node on the same coordinate.
+    """
+    # ~111km per degree latitude; longitude degrees shrink with cos(latitude).
+    radius_km = random.uniform(0.3, max_km)
+    angle = random.uniform(0, 2 * math.pi)
+    dlat = (radius_km * math.cos(angle)) / 111.0
+    dlng = (radius_km * math.sin(angle)) / (111.0 * math.cos(math.radians(lat)) or 1.0)
+    return round(lat + dlat, 6), round(lng + dlng, 6)
+
+
+def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Great-circle distance in km — keeps the displayed NEAR distance
+    consistent with the actual map coordinates."""
+    r = 6371.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lng2 - lng1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(a))
 
 FIRST_NAMES = [
     "Aarav", "Vivaan", "Aditya", "Diya", "Ananya", "Ishaan", "Kavya", "Rohan",
@@ -80,10 +106,14 @@ def build_graph(data: dict) -> dict:
     for co in companies_in:
         offices = []
         for city in co["officeCities"]:
+            base = city_by_name[city]
+            olat, olng = jitter_coords(base["lat"], base["lng"], max_km=4.0)
             office = {
                 "officeId": office_id,
                 "name": f"{co['name']} — {city} Office",
                 "city": city,
+                "lat": olat,
+                "lng": olng,
             }
             offices.append(office)
             offices_by_city[city].append(office)
@@ -118,6 +148,7 @@ def build_graph(data: dict) -> dict:
             if safety >= 4.3 and "Women-Safe Certified" not in base:
                 base.append("Women-Safe Certified")
 
+            hlat, hlng = jitter_coords(city["lat"], city["lng"], max_km=8.0)
             hotel = {
                 "hotelId": hotel_id,
                 "name": name,
@@ -126,14 +157,18 @@ def build_graph(data: dict) -> dict:
                 "starRating": star,
                 "safetyScore": safety,
                 "gstRegistered": random.random() > 0.12,
+                "lat": hlat,
+                "lng": hlng,
             }
             hotels.append(hotel)
             hotels_by_city[city["name"]].append(hotel)
             for am in set(base):
                 hotel_amenities.append({"hotelId": hotel_id, "amenity": am})
-            # NEAR relationships to offices in the same city
+            # NEAR relationships to offices in the same city — distance is the
+            # real great-circle distance between the hotel and office
+            # coordinates, so the map and the stated km always agree.
             for office in offices_by_city[city["name"]]:
-                dist = round(random.uniform(0.4, 11.5), 1)
+                dist = round(haversine_km(hlat, hlng, office["lat"], office["lng"]), 1)
                 hotel_near.append(
                     {"hotelId": hotel_id, "officeId": office["officeId"], "distanceKm": dist}
                 )
@@ -235,7 +270,7 @@ def load(session, g: dict) -> None:
     print(f"Loading {len(g['cities'])} cities + {len(g['amenities'])} amenities...")
     session.run(
         "UNWIND $cities AS c MERGE (ci:City {name: c.name}) "
-        "SET ci.tier = c.tier, ci.state = c.state",
+        "SET ci.tier = c.tier, ci.state = c.state, ci.lat = c.lat, ci.lng = c.lng",
         cities=g["cities"],
     )
     session.run(
@@ -251,7 +286,8 @@ def load(session, g: dict) -> None:
           SET c.name = co.name, c.industry = co.industry
         WITH c, co
         UNWIND co.offices AS off
-          MERGE (o:Office {officeId: off.officeId}) SET o.name = off.name
+          MERGE (o:Office {officeId: off.officeId})
+            SET o.name = off.name, o.lat = off.lat, o.lng = off.lng
           MERGE (c)-[:HAS_OFFICE]->(o)
           WITH o, off
           MATCH (ci:City {name: off.city})
@@ -269,7 +305,9 @@ def load(session, g: dict) -> None:
               hotel.pricePerNight = h.pricePerNight,
               hotel.starRating = h.starRating,
               hotel.safetyScore = h.safetyScore,
-              hotel.gstRegistered = h.gstRegistered
+              hotel.gstRegistered = h.gstRegistered,
+              hotel.lat = h.lat,
+              hotel.lng = h.lng
         WITH hotel, h
         MATCH (ci:City {name: h.city})
         MERGE (hotel)-[:LOCATED_IN]->(ci)

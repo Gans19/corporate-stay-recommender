@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "../api";
-import type { ConnectionPath, Recommendation } from "../types";
+import type { ConnectionPath, MapContext, Recommendation } from "../types";
 import { cardIn } from "../motion";
 import { ConnectionPathView } from "./ConnectionPathView";
 import { AvatarStack, HotelMonogram } from "./Avatars";
+import { RouteMap } from "./RouteMap";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -33,6 +34,10 @@ export function RecommendationCard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [mapCtx, setMapCtx] = useState<MapContext | null>(null);
+  const [mapLoading, setMapLoading] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
+
   const togglePath = async () => {
     if (path) {
       setPath(null);
@@ -46,6 +51,22 @@ export function RecommendationCard({
       setError(e instanceof Error ? e.message : "Could not load path");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleMap = async () => {
+    if (mapCtx) {
+      setMapCtx(null);
+      return;
+    }
+    setMapLoading(true);
+    setMapError(null);
+    try {
+      setMapCtx(await api.mapContext(employeeId, rec.hotelId));
+    } catch (e) {
+      setMapError(e instanceof Error ? e.message : "Could not load map");
+    } finally {
+      setMapLoading(false);
     }
   };
 
@@ -100,17 +121,29 @@ export function RecommendationCard({
         <span>{explanation(rec)}</span>
       </div>
 
-      <button
-        className={"link-btn" + (path ? " open" : "")}
-        onClick={togglePath}
-        disabled={loading}
-        aria-expanded={!!path}
-      >
-        {loading ? "Loading…" : path ? "Hide graph path" : "Why this? Show graph path"}
-        <span className="chev">↓</span>
-      </button>
+      <div className="card-toggles">
+        <button
+          className={"link-btn" + (path ? " open" : "")}
+          onClick={togglePath}
+          disabled={loading}
+          aria-expanded={!!path}
+        >
+          {loading ? "Loading…" : path ? "Hide graph path" : "Why this? Show graph path"}
+          <span className="chev">↓</span>
+        </button>
+        <button
+          className={"link-btn" + (mapCtx ? " open" : "")}
+          onClick={toggleMap}
+          disabled={mapLoading}
+          aria-expanded={!!mapCtx}
+        >
+          {mapLoading ? "Loading…" : mapCtx ? "Hide map" : "Show on map"}
+          <span className="chev">↓</span>
+        </button>
+      </div>
 
       {error && <div className="error-box">{error}</div>}
+      {mapError && <div className="error-box">{mapError}</div>}
 
       <AnimatePresence initial={false}>
         {path && (
@@ -123,6 +156,18 @@ export function RecommendationCard({
             style={{ overflow: "hidden" }}
           >
             <ConnectionPathView path={path} />
+          </motion.div>
+        )}
+        {mapCtx && (
+          <motion.div
+            key="map"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <RouteMap context={mapCtx} />
           </motion.div>
         )}
       </AnimatePresence>
