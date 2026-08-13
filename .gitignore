@@ -1,0 +1,33 @@
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+*.tsbuildinfo
+# tsc -b (composite) emitted artifacts for the node config
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Build
+build/

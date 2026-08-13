@@ -1,0 +1,46 @@
+{
+  "cities": [
+    { "name": "Bengaluru", "tier": 1, "state": "Karnataka" },
+    { "name": "Mumbai", "tier": 1, "state": "Maharashtra" },
+    { "name": "Pune", "tier": 2, "state": "Maharashtra" },
+    { "name": "Coimbatore", "tier": 2, "state": "Tamil Nadu" },
+    { "name": "Kochi", "tier": 2, "state": "Kerala" },
+    { "name": "Indore", "tier": 2, "state": "Madhya Pradesh" },
+    { "name": "Nagpur", "tier": 2, "state": "Maharashtra" },
+    { "name": "Mysuru", "tier": 2, "state": "Karnataka" },
+    { "name": "Vijayawada", "tier": 2, "state": "Andhra Pradesh" },
+    { "name": "Nashik", "tier": 3, "state": "Maharashtra" },
+    { "name": "Rajkot", "tier": 3, "state": "Gujarat" },
+    { "name": "Hubballi", "tier": 3, "state": "Karnataka" },
+    { "name": "Salem", "tier": 3, "state": "Tamil Nadu" },
+    { "name": "Guntur", "tier": 3, "state": "Andhra Pradesh" }
+  ],
+  "companies": [
+    { "companyId": 1, "name": "Sunrise FMCG", "industry": "FMCG", "officeCities": ["Bengaluru", "Coimbatore", "Indore", "Nashik", "Salem"] },
+    { "companyId": 2, "name": "NovaTech Systems", "industry": "IT Services", "officeCities": ["Bengaluru", "Pune", "Kochi", "Mysuru"] },
+    { "companyId": 3, "name": "BharatPharma Ltd", "industry": "Pharma", "officeCities": ["Mumbai", "Nagpur", "Vijayawada", "Guntur"] },
+    { "companyId": 4, "name": "GreenField Agro", "industry": "Agri-business", "officeCities": ["Indore", "Rajkot", "Hubballi", "Nashik"] },
+    { "companyId": 5, "name": "Meridian Consumer", "industry": "FMCG", "officeCities": ["Mumbai", "Pune", "Coimbatore", "Guntur"] },
+    { "companyId": 6, "name": "Orbit Financial", "industry": "BFSI", "officeCities": ["Bengaluru", "Mumbai", "Kochi", "Vijayawada"] }
+  ],
+  "amenities": [
+    "Free WiFi", "Breakfast Included", "24x7 Front Desk", "Airport Shuttle",
+    "Laundry", "Business Center", "Restaurant", "Parking", "Power Backup",
+    "CCTV Security", "Women-Safe Certified", "Gym", "Kitchenette", "Housekeeping"
+  ],
+  "hotelBrandPrefixes": [
+    "Hotel", "The", "Grand", "Comfort", "Regency", "Sterling", "Crown",
+    "Blue Orchid", "Sai", "Green Park", "Royal", "City", "Metro", "Silver Oak"
+  ],
+  "hotelBrandSuffixes": [
+    "Residency", "Inn", "Suites", "Grand", "Plaza", "Comforts", "Palace",
+    "Continental", "Executive", "Stay", "Regency", "Court", "Nest", "Manor"
+  ],
+  "purposes": [
+    "FMCG Field Visit",
+    "New Hire Onboarding",
+    "Long Stay",
+    "MICE Event",
+    "Client Meeting"
+  ]
+}
