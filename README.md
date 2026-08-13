@@ -305,11 +305,45 @@ components, motion, states, accessibility and responsiveness — is documented i
 
 ## Deployment
 
-- **Frontend:** any static host (Vercel / Netlify). Build with `npm run build`
-  and set `VITE_API_BASE_URL` to the deployed backend URL.
-- **Backend:** any container/PaaS free tier (Render / Railway / Fly.io). Set the
-  `NEO4J_*` and `ALLOWED_ORIGINS` environment variables in the host dashboard.
-- Keep the CognoDB instance running so reviewers can try the app against live data.
-```
-uvicorn app.main:app --host 0.0.0.0 --port $PORT
-```
+Config files for a zero-cost deploy are already in the repo: [`render.yaml`](render.yaml)
+for the backend and [`frontend/vercel.json`](frontend/vercel.json) for the frontend.
+Secrets are **never** stored in these files — they're entered in each platform's
+dashboard as environment variables.
+
+### 1. Backend on Render
+
+1. Go to [render.com](https://render.com) → New → **Blueprint** → connect this
+   GitHub repo. Render will detect `render.yaml` automatically.
+   (Alternatively: New → **Web Service**, root directory `backend`, build
+   command `pip install -r requirements.txt`, start command
+   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.)
+2. In the service's **Environment** tab, set:
+   - `NEO4J_URI` — your CognoDB `bolt+s://...` URI
+   - `NEO4J_USER` — `cognodb`
+   - `NEO4J_PASSWORD` — your CognoDB password
+   - `NEO4J_DATABASE` — `neo4j`
+   - `ALLOWED_ORIGINS` — the frontend URL you'll get in step 2 (update after)
+3. Deploy. Note the resulting URL, e.g. `https://corporate-stay-recommender-api.onrender.com`.
+4. Sanity check: `curl https://<your-backend>.onrender.com/api/health`.
+
+> Render's free tier spins the service down when idle — the first request
+> after inactivity can take ~30–60s to wake up.
+
+### 2. Frontend on Vercel
+
+1. Go to [vercel.com](https://vercel.com) → New Project → import this repo.
+2. Set **Root Directory** to `frontend`.
+3. Add environment variable `VITE_API_BASE_URL` = the Render backend URL from
+   step 1 (no trailing slash).
+4. Deploy. Note the resulting URL, e.g. `https://corporate-stay-recommender.vercel.app`.
+
+### 3. Close the loop (CORS)
+
+Go back to the Render service → Environment → update `ALLOWED_ORIGINS` to the
+Vercel URL from step 2, then trigger a redeploy so the backend accepts
+requests from the live frontend.
+
+### 4. Keep it running
+
+Keep the CognoDB instance and the Render service active so reviewers can try
+the app against live data during the evaluation window.
